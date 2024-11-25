@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Note</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Create New Note</h1>
+            <a href="MyDailyNotes.html" class="back-btn">Back to Notes</a>
+        </header>
+        <div class="note-form">
+            <input type="text" id="note-title" placeholder="Note Title">
+            <textarea id="note-content" rows="5" placeholder="Write your note..."></textarea>
+            <button onclick="addNote()">Add Note</button>
+        </div>
+    </div>
+
+    <script>
+        function addNote() {
+            const title = document.getElementById('note-title').value;
+            const content = document.getElementById('note-content').value;
+
+            if (title && content) {
+                const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+                savedNotes.push({ title, content });
+                localStorage.setItem('notes', JSON.stringify(savedNotes));
+                window.location.href = 'MyDailyNotes.html'; 
+            } else {
+                alert('Please fill in both fields');
+            }
+        }
+    </script>
+</body>
+</html>
