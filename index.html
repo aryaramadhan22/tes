@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Daily Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Daily Notes</h1>
+        </header>
+        <div class="notes" id="notes">
+        
+        </div>
+        <a href="add_notes.html" class="add-note-btn">+</a>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-content"></p>
+        </div>
+    </div>
+
+    <script>
+        function loadNotes() {
+            const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+            const notesContainer = document.getElementById('notes');
+            notesContainer.innerHTML = '';
+
+            savedNotes.forEach((noteData, index) => {
+                const note = createNoteElement(noteData.title, noteData.content, index);
+                notesContainer.appendChild(note);
+            });
+        }
+
+        function createNoteElement(title, content, index) {
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.onclick = function () {
+                openModal(title, content);
+            };
+
+            const noteTitle = document.createElement('h2');
+            noteTitle.textContent = title;
+            note.appendChild(noteTitle);
+
+            const noteContent = document.createElement('p');
+            noteContent.textContent = content.length > 100 
+                ? content.substring(0, 100) + "..." 
+                : content; 
+            note.appendChild(noteContent);
+
+            const noteFooter = document.createElement('div');
+            noteFooter.className = 'note-footer';
+
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-btn';
+            editButton.textContent = 'EDIT';
+            editButton.onclick = function (event) {
+                event.stopPropagation(); 
+                editNote(index);
+            };
+            noteFooter.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-btn';
+            deleteButton.textContent = 'DELETE';
+            deleteButton.onclick = function (event) {
+                event.stopPropagation();
+                deleteNoteFromLocalStorage(index);
+                note.remove();
+            };
+            noteFooter.appendChild(deleteButton);
+
+            note.appendChild(noteFooter);
+            return note;
+        }
+
+        function openModal(title, content) {
+            const modal = document.getElementById('modal');
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-content').textContent = content;
+
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none';
+        }
+
+        window.onload = function () {
+            loadNotes();
+
+       
+            const closeButton = document.querySelector('.close-btn');
+            closeButton.addEventListener('click', closeModal);
+
+           
+            window.addEventListener('click', function (event) {
+                const modal = document.getElementById('modal');
+                if (event.target === modal) {
+                    closeModal();
+                }
+            });
+        };
+
+        function deleteNoteFromLocalStorage(index) {
+            const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+            savedNotes.splice(index, 1); 
+            localStorage.setItem('notes', JSON.stringify(savedNotes)); 
+            loadNotes();
+        }
+
+        function editNote(index) {
+            window.location.href = `edit_notes.html?index=${index}`;
+        }
+    </script>
+</body>
+</html>
